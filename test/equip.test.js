@@ -278,14 +278,16 @@ describe("platformName", () => {
 });
 
 describe("KNOWN_PLATFORMS", () => {
-  it("includes all 9 platforms", () => {
-    assert.equal(KNOWN_PLATFORMS.length, 9);
+  it("includes all 11 platforms", () => {
+    assert.equal(KNOWN_PLATFORMS.length, 11);
     assert.ok(KNOWN_PLATFORMS.includes("vscode"));
     assert.ok(KNOWN_PLATFORMS.includes("cline"));
     assert.ok(KNOWN_PLATFORMS.includes("roo-code"));
     assert.ok(KNOWN_PLATFORMS.includes("codex"));
     assert.ok(KNOWN_PLATFORMS.includes("gemini-cli"));
     assert.ok(KNOWN_PLATFORMS.includes("junie"));
+    assert.ok(KNOWN_PLATFORMS.includes("copilot-jetbrains"));
+    assert.ok(KNOWN_PLATFORMS.includes("copilot-cli"));
   });
 });
 
@@ -708,6 +710,121 @@ describe("createManualPlatform (Junie)", () => {
     assert.equal(p.rootKey, "mcpServers");
     assert.equal(p.configFormat, "json");
     assert.ok(p.configPath.includes(".junie"));
+    assert.equal(p.rulesPath, null);
+  });
+});
+
+// --- Copilot (JetBrains) ------------------------------------------------
+
+describe("platformName (Copilot JetBrains)", () => {
+  it("returns Copilot (JetBrains)", () => {
+    assert.equal(platformName("copilot-jetbrains"), "Copilot (JetBrains)");
+  });
+});
+
+describe("buildHttpConfig (Copilot JetBrains)", () => {
+  it("returns url for copilot-jetbrains", () => {
+    const config = buildHttpConfig("https://example.com/mcp", "copilot-jetbrains");
+    assert.equal(config.url, "https://example.com/mcp");
+    assert.equal(config.type, undefined);
+  });
+});
+
+describe("Copilot JetBrains MCP install (JSON)", () => {
+  it("installs and preserves entries", () => {
+    const dir = tmpPath("copilot-jb-dir");
+    fs.mkdirSync(dir, { recursive: true });
+    const configPath = path.join(dir, "mcp.json");
+    fs.writeFileSync(configPath, JSON.stringify({ mcpServers: { other: { url: "https://other.com" } } }));
+    const p = mockPlatform({ platform: "copilot-jetbrains", configPath, rootKey: "mcpServers", configFormat: "json" });
+    installMcpJson(p, "prior", { url: "https://api.cg3.io/mcp" }, false);
+    const data = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+    assert.equal(data.mcpServers.other.url, "https://other.com");
+    assert.equal(data.mcpServers.prior.url, "https://api.cg3.io/mcp");
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+});
+
+describe("Equip class (Copilot JetBrains)", () => {
+  it("installMcp and readMcp roundtrip", () => {
+    const dir = tmpPath("copilot-jb-equip");
+    fs.mkdirSync(dir, { recursive: true });
+    const configPath = path.join(dir, "mcp.json");
+    const e = new Equip({ name: "myserver", serverUrl: "https://example.com/mcp" });
+    const p = mockPlatform({ platform: "copilot-jetbrains", configPath, rootKey: "mcpServers", configFormat: "json" });
+    e.installMcp(p, "key123");
+    const entry = e.readMcp(p);
+    assert.ok(entry);
+    assert.equal(entry.url, "https://example.com/mcp");
+    e.uninstallMcp(p);
+    assert.equal(e.readMcp(p), null);
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+});
+
+describe("createManualPlatform (Copilot JetBrains)", () => {
+  it("returns correct config", () => {
+    const p = createManualPlatform("copilot-jetbrains");
+    assert.equal(p.platform, "copilot-jetbrains");
+    assert.equal(p.rootKey, "mcpServers");
+    assert.equal(p.configFormat, "json");
+    assert.ok(p.configPath.includes("github-copilot"));
+    assert.equal(p.rulesPath, null);
+  });
+});
+
+// --- Copilot CLI ---------------------------------------------------------
+
+describe("platformName (Copilot CLI)", () => {
+  it("returns Copilot CLI", () => {
+    assert.equal(platformName("copilot-cli"), "Copilot CLI");
+  });
+});
+
+describe("buildHttpConfig (Copilot CLI)", () => {
+  it("returns url for copilot-cli", () => {
+    const config = buildHttpConfig("https://example.com/mcp", "copilot-cli");
+    assert.equal(config.url, "https://example.com/mcp");
+  });
+});
+
+describe("Copilot CLI MCP install (JSON)", () => {
+  it("installs to mcp-config.json", () => {
+    const dir = tmpPath("copilot-cli-dir");
+    fs.mkdirSync(dir, { recursive: true });
+    const configPath = path.join(dir, "mcp-config.json");
+    const p = mockPlatform({ platform: "copilot-cli", configPath, rootKey: "mcpServers", configFormat: "json" });
+    installMcpJson(p, "prior", { url: "https://api.cg3.io/mcp" }, false);
+    const data = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+    assert.equal(data.mcpServers.prior.url, "https://api.cg3.io/mcp");
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+});
+
+describe("Equip class (Copilot CLI)", () => {
+  it("installMcp and readMcp roundtrip", () => {
+    const dir = tmpPath("copilot-cli-equip");
+    fs.mkdirSync(dir, { recursive: true });
+    const configPath = path.join(dir, "mcp-config.json");
+    const e = new Equip({ name: "myserver", serverUrl: "https://example.com/mcp" });
+    const p = mockPlatform({ platform: "copilot-cli", configPath, rootKey: "mcpServers", configFormat: "json" });
+    e.installMcp(p, "key123");
+    const entry = e.readMcp(p);
+    assert.ok(entry);
+    assert.equal(entry.url, "https://example.com/mcp");
+    e.uninstallMcp(p);
+    assert.equal(e.readMcp(p), null);
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+});
+
+describe("createManualPlatform (Copilot CLI)", () => {
+  it("returns correct config", () => {
+    const p = createManualPlatform("copilot-cli");
+    assert.equal(p.platform, "copilot-cli");
+    assert.equal(p.rootKey, "mcpServers");
+    assert.equal(p.configFormat, "json");
+    assert.ok(p.configPath.includes(".copilot"));
     assert.equal(p.rulesPath, null);
   });
 });
