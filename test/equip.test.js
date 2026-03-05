@@ -162,10 +162,16 @@ describe("Equip class", () => {
 
 describe("buildHttpConfig", () => {
   it("returns url for standard platforms", () => {
-    const c = buildHttpConfig("https://x.com/mcp", "claude-code");
+    const c = buildHttpConfig("https://x.com/mcp", "cline");
     assert.equal(c.url, "https://x.com/mcp");
     assert.ok(!c.serverUrl);
     assert.ok(!c.type);
+  });
+
+  it("returns type:http for claude-code", () => {
+    const c = buildHttpConfig("https://x.com/mcp", "claude-code");
+    assert.equal(c.url, "https://x.com/mcp");
+    assert.equal(c.type, "http");
   });
 
   it("returns serverUrl for windsurf", () => {
