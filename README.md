@@ -141,6 +141,18 @@ const { detectPlatforms, installMcpJson, installRules, createManualPlatform, pla
 - **Dry-run support** — Preview changes without writing files
 - **CLI helpers** — Colored output, prompts, clipboard utilities included
 
+## Limitations — Why Rules Matter (and Why They're Not Enough)
+
+MCP tool descriptions alone don't reliably trigger agent behavior. [Research on 856 MCP tools](https://arxiv.org/abs/2602.14878) found that 97.1% of tool descriptions contain quality issues, and even fully optimized descriptions only improve task success by ~6 percentage points.
+
+Behavioral rules (the `.md` files equip installs) are stronger — they live in the agent's system prompt or project context, closer to how agents make decisions. But they have limits too:
+
+- **Context window compaction** can drop rules from the agent's working memory during long sessions
+- **No platform hooks exist** to enforce tool calls — the agent always decides whether to act
+- **No open standard** for server-initiated actions (MCP sampling exists in spec but isn't widely implemented)
+
+Equip gives you the best available distribution: MCP config for tool availability + behavioral rules for usage guidance. For guaranteed tool invocation, platform-level middleware (IDE extensions, framework hooks) is required — but that doesn't exist as open infrastructure yet.
+
 ## License
 
 MIT — CG3 LLC
