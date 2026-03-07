@@ -16,6 +16,7 @@ const EQUIP_VERSION = JSON.parse(
 
 const TOOLS = {
   prior: { package: "@cg3/prior-node", command: "setup" },
+  demo: { builtin: true },
 };
 
 // ─── CLI ─────────────────────────────────────────────────────
@@ -28,7 +29,11 @@ if (!alias || alias === "--help" || alias === "-h") {
   console.log("");
   console.log("Available tools:");
   for (const [name, info] of Object.entries(TOOLS)) {
-    console.log(`  ${name}  →  ${info.package} ${info.command}`);
+    if (info.builtin) {
+      console.log(`  ${name}  →  built-in (reference example)`);
+    } else {
+      console.log(`  ${name}  →  ${info.package} ${info.command}`);
+    }
   }
   console.log("");
   console.log("Options are forwarded to the tool (e.g. --dry-run, --platform codex)");
@@ -36,6 +41,23 @@ if (!alias || alias === "--help" || alias === "-h") {
 }
 
 const entry = TOOLS[alias];
+
+// Built-in tools run from this package directly
+if (entry && entry.builtin) {
+  if (alias === "demo") {
+    const demoPath = path.join(__dirname, "..", "demo", "setup.js");
+    const child = spawn(process.execPath, [demoPath, ...extraArgs], {
+      stdio: "inherit",
+      env: { ...process.env, EQUIP_VERSION },
+    });
+    child.on("close", (code) => process.exit(code || 0));
+    child.on("error", (err) => {
+      console.error(`Failed to run demo: ${err.message}`);
+      process.exit(1);
+    });
+    return;
+  }
+}
 
 // No registry match — treat as a package name (e.g. "@scope/pkg setup")
 if (!entry) {

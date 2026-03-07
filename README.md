@@ -4,6 +4,19 @@ Universal MCP server + behavioral rules installer for AI coding agents.
 
 Equip handles the hard part of distributing your MCP tool: detecting which AI coding platforms are installed, writing the correct config format for each one, and managing versioned behavioral rules — all with zero dependencies.
 
+## Run the Demo
+
+```bash
+npx @cg3/equip demo
+```
+
+A self-contained, inline-documented setup script that walks through every equip feature — platform detection, MCP config, behavioral rules, and uninstallation. Runs in dry-run mode by default (no files touched). See [`demo/setup.js`](./demo/setup.js) for the full source.
+
+```bash
+npx @cg3/equip demo --live        # actually write config files
+npx @cg3/equip demo --uninstall   # clean up demo files
+```
+
 ## Supported Platforms
 
 Equip supports **11 platforms** across two tiers, depending on whether the platform has a writable location for behavioral rules.
