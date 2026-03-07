@@ -6,6 +6,7 @@
 const { detectPlatforms, whichSync, dirExists, fileExists } = require("./lib/detect");
 const { readMcpEntry, buildHttpConfig, buildHttpConfigWithAuth, buildStdioConfig, installMcp, installMcpJson, installMcpToml, uninstallMcp, updateMcpKey, parseTomlServerEntry, parseTomlSubTables, buildTomlEntry, removeTomlEntry } = require("./lib/mcp");
 const { parseRulesVersion, installRules, uninstallRules, markerPatterns } = require("./lib/rules");
+const { getHookCapabilities, installHooks, uninstallHooks, hasHooks, buildHooksConfig, getHookScripts } = require("./lib/hooks");
 const { createManualPlatform, platformName, KNOWN_PLATFORMS } = require("./lib/platforms");
 const cli = require("./lib/cli");
 
@@ -147,6 +148,46 @@ class Equip {
   readMcp(platform) {
     return readMcpEntry(platform.configPath, platform.rootKey, this.name, platform.configFormat || "json");
   }
+
+  /**
+   * Install lifecycle hooks on a platform (if supported).
+   * Hooks provide structural enforcement (e.g., search reminders on errors).
+   * @param {object} platform - Platform object from detect()
+   * @param {object} [options] - { hookDir, dryRun }
+   * @returns {{ installed: boolean, scripts: string[], hookDir: string } | null}
+   */
+  installHooks(platform, options = {}) {
+    return installHooks(platform, options);
+  }
+
+  /**
+   * Uninstall hooks from a platform.
+   * @param {object} platform - Platform object
+   * @param {object} [options] - { hookDir, dryRun }
+   * @returns {boolean}
+   */
+  uninstallHooks(platform, options = {}) {
+    return uninstallHooks(platform, options);
+  }
+
+  /**
+   * Check if hooks are installed on a platform.
+   * @param {object} platform - Platform object
+   * @param {object} [options] - { hookDir }
+   * @returns {boolean}
+   */
+  hasHooks(platform, options = {}) {
+    return hasHooks(platform, options);
+  }
+
+  /**
+   * Check if a platform supports hooks.
+   * @param {object} platform - Platform object
+   * @returns {boolean}
+   */
+  supportsHooks(platform) {
+    return !!getHookCapabilities(platform.platform);
+  }
 }
 
 module.exports = {
@@ -173,5 +214,12 @@ module.exports = {
   createManualPlatform,
   platformName,
   KNOWN_PLATFORMS,
+  // Hooks
+  getHookCapabilities,
+  installHooks,
+  uninstallHooks,
+  hasHooks,
+  buildHooksConfig,
+  getHookScripts,
   cli,
 };

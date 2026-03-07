@@ -35,6 +35,19 @@ These platforms get MCP server config but don't have a writable global rules fil
 
 For these platforms, `installRules()` returns `{ action: "clipboard" }` if the platform is in the configurable `clipboardPlatforms` list (default: `["cursor", "vscode"]`), or `{ action: "skipped" }` otherwise. It's up to the consumer to decide how to handle this — e.g., copying rules to the clipboard, printing instructions, or skipping silently.
 
+### Hooks — Structural Enforcement
+
+Some platforms support **lifecycle hooks** — scripts that run automatically at key moments (e.g., after a tool fails, when the agent finishes responding). Hooks provide structural enforcement that behavioral rules alone cannot:
+
+| Platform | Hooks Support | Events |
+|---|---|---|
+| Claude Code | ✅ | `PostToolUseFailure`, `Stop`, `PreToolUse`, `PostToolUse` |
+| All others | ❌ | — |
+
+When hooks are supported, equip installs lightweight Node.js scripts to `~/.prior/hooks/` and registers them in the platform's settings. Hooks are a **silent enhancement** — if the platform doesn't support them, equip installs only MCP + rules without any error or warning.
+
+Hooks are opt-in per platform via the capabilities model. As more platforms add hook support, equip can enable them without consumer code changes.
+
 ## Quick Start
 
 ```bash
@@ -122,6 +135,10 @@ for (const p of platforms) {
 - `equip.uninstallRules(platform, dryRun?)` — Remove behavioral rules
 - `equip.readMcp(platform)` — Check if MCP is configured
 - `equip.buildConfig(platformId, apiKey, transport?)` — Build MCP config object
+- `equip.installHooks(platform, options?)` — Install lifecycle hooks (if supported)
+- `equip.uninstallHooks(platform, options?)` — Remove hooks
+- `equip.hasHooks(platform, options?)` — Check if hooks are installed
+- `equip.supportsHooks(platform)` — Check if platform supports hooks
 
 ### Primitives
 
@@ -151,7 +168,7 @@ Behavioral rules (the `.md` files equip installs) are stronger — they live in 
 - **No platform hooks exist** to enforce tool calls — the agent always decides whether to act
 - **No open standard** for server-initiated actions (MCP sampling exists in spec but isn't widely implemented)
 
-Equip gives you the best available distribution: MCP config for tool availability + behavioral rules for usage guidance. For guaranteed tool invocation, platform-level middleware (IDE extensions, framework hooks) is required — but that doesn't exist as open infrastructure yet.
+Equip gives you the best available distribution: MCP config for tool availability + behavioral rules for usage guidance + lifecycle hooks for structural enforcement on platforms that support them. Hooks bridge the gap between "the agent knows the rules" and "the agent actually follows them" by injecting reminders at the exact moment an error occurs.
 
 ## License
 
