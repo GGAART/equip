@@ -6,7 +6,7 @@
 const { detectPlatforms, whichSync, dirExists, fileExists } = require("./lib/detect");
 const { readMcpEntry, buildHttpConfig, buildHttpConfigWithAuth, buildStdioConfig, installMcp, installMcpJson, installMcpToml, uninstallMcp, updateMcpKey, parseTomlServerEntry, parseTomlSubTables, buildTomlEntry, removeTomlEntry } = require("./lib/mcp");
 const { parseRulesVersion, installRules, uninstallRules, markerPatterns } = require("./lib/rules");
-const { getHookCapabilities, installHooks, uninstallHooks, hasHooks, buildHooksConfig, getHookScripts } = require("./lib/hooks");
+const { getHookCapabilities, installHooks, uninstallHooks, hasHooks, buildHooksConfig } = require("./lib/hooks");
 const { createManualPlatform, platformName, KNOWN_PLATFORMS } = require("./lib/platforms");
 const cli = require("./lib/cli");
 
@@ -37,6 +37,12 @@ class Equip {
    * @param {string} config.stdio.command - Command to run
    * @param {string[]} config.stdio.args - Command arguments
    * @param {string} config.stdio.envKey - Env var name for API key
+   * @param {Array} [config.hooks] - Lifecycle hook definitions
+   * @param {string} config.hooks[].event - Hook event name (e.g., "PostToolUseFailure")
+   * @param {string} [config.hooks[].matcher] - Regex matcher for event filtering (e.g., "Bash")
+   * @param {string} config.hooks[].script - Hook script content (Node.js)
+   * @param {string} config.hooks[].name - Script filename (without .js extension)
+   * @param {string} [config.hookDir] - Directory for hook scripts (default: ~/.prior/hooks)
    */
   constructor(config) {
     if (!config.name) throw new Error("Equip: name is required");
@@ -46,6 +52,8 @@ class Equip {
     this.serverUrl = config.serverUrl;
     this.rules = config.rules || null;
     this.stdio = config.stdio || null;
+    this.hookDefs = config.hooks || null;
+    this.hookDir = config.hookDir || null;
   }
 
   /**
@@ -151,13 +159,16 @@ class Equip {
 
   /**
    * Install lifecycle hooks on a platform (if supported).
-   * Hooks provide structural enforcement (e.g., search reminders on errors).
+   * Uses hook definitions from constructor config.
    * @param {object} platform - Platform object from detect()
    * @param {object} [options] - { hookDir, dryRun }
    * @returns {{ installed: boolean, scripts: string[], hookDir: string } | null}
    */
   installHooks(platform, options = {}) {
-    return installHooks(platform, options);
+    if (!this.hookDefs) return null;
+    const opts = { ...options };
+    if (this.hookDir && !opts.hookDir) opts.hookDir = this.hookDir;
+    return installHooks(platform, this.hookDefs, opts);
   }
 
   /**
@@ -167,7 +178,10 @@ class Equip {
    * @returns {boolean}
    */
   uninstallHooks(platform, options = {}) {
-    return uninstallHooks(platform, options);
+    if (!this.hookDefs) return false;
+    const opts = { ...options };
+    if (this.hookDir && !opts.hookDir) opts.hookDir = this.hookDir;
+    return uninstallHooks(platform, this.hookDefs, opts);
   }
 
   /**
@@ -177,16 +191,19 @@ class Equip {
    * @returns {boolean}
    */
   hasHooks(platform, options = {}) {
-    return hasHooks(platform, options);
+    if (!this.hookDefs) return false;
+    const opts = { ...options };
+    if (this.hookDir && !opts.hookDir) opts.hookDir = this.hookDir;
+    return hasHooks(platform, this.hookDefs, opts);
   }
 
   /**
-   * Check if a platform supports hooks.
+   * Check if a platform supports hooks and this instance has hook definitions.
    * @param {object} platform - Platform object
    * @returns {boolean}
    */
   supportsHooks(platform) {
-    return !!getHookCapabilities(platform.platform);
+    return !!this.hookDefs && this.hookDefs.length > 0 && !!getHookCapabilities(platform.platform);
   }
 }
 
@@ -220,6 +237,5 @@ module.exports = {
   uninstallHooks,
   hasHooks,
   buildHooksConfig,
-  getHookScripts,
   cli,
 };
