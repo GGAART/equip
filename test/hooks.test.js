@@ -143,6 +143,13 @@ describe("installHooks", () => {
   });
 
   afterEach(() => {
+    // Clean up hooks from settings.json BEFORE deleting the temp dir
+    // (uninstallHooks checks for script existence to match entries)
+    try {
+      const platform = { platform: "claude-code" };
+      uninstallHooks(platform, SAMPLE_HOOKS, { hookDir, dryRun: false });
+      uninstallHooks(platform, OTHER_HOOKS, { hookDir, dryRun: false });
+    } catch { /* best effort */ }
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
@@ -222,6 +229,12 @@ describe("uninstallHooks", () => {
   });
 
   afterEach(() => {
+    // Clean up any hooks from settings.json
+    try {
+      const platform = { platform: "claude-code" };
+      uninstallHooks(platform, SAMPLE_HOOKS, { hookDir, dryRun: false });
+      uninstallHooks(platform, OTHER_HOOKS, { hookDir, dryRun: false });
+    } catch { /* best effort */ }
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
@@ -273,6 +286,11 @@ describe("hasHooks", () => {
   });
 
   afterEach(() => {
+    try {
+      const platform = { platform: "claude-code" };
+      uninstallHooks(platform, SAMPLE_HOOKS, { hookDir, dryRun: false });
+      uninstallHooks(platform, OTHER_HOOKS, { hookDir, dryRun: false });
+    } catch { /* best effort */ }
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
@@ -507,6 +525,10 @@ describe("Equip class hooks integration", () => {
   });
 
   afterEach(() => {
+    try {
+      const platform = { platform: "claude-code" };
+      uninstallHooks(platform, SAMPLE_HOOKS, { hookDir, dryRun: false });
+    } catch { /* best effort */ }
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
